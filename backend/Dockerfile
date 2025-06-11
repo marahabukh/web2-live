@@ -1,60 +1,33 @@
 # Use official PHP image with Apache
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install required PHP extensions and system packages
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    nodejs \
-    npm
+    git unzip curl libzip-dev zip libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (for better caching)
-COPY composer.json composer.lock ./
-
-# Install PHP dependencies
-RUN composer install --no-dev --no-scripts --no-autoloader
-
-# Copy the rest of the application
+# Copy project files
 COPY . .
 
-# Complete the composer installation
-RUN composer dump-autoload --no-dev --optimize
+# Install PHP dependencies using Composer
+RUN composer install
 
-# Set proper permissions
+# Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Laravel setup (optional: can be moved to entrypoint)
+RUN php artisan key:generate
+# RUN php artisan migrate --force  # You can run this at runtime instead if safer
 
-# Copy Apache configuration
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
-
-# Create startup script
-COPY docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-# Expose port 80
+# Expose port for Laravel's PHP server or Apache (default 80)
 EXPOSE 80
 
-# Start the application
-CMD ["/usr/local/bin/start.sh"]
+# Start Apache (or use CMD for php artisan serve)
+CMD ["apache2-foreground"]
