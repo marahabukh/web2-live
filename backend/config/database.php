@@ -28,21 +28,6 @@ return [
     | is supported by Laravel. You're free to add / remove connections.
     |
     */
-    'supabase' => [
-    'driver' => 'pgsql',
-    'url' => env('SUPABASE_URL'),
-    'host' => parse_url(env('SUPABASE_URL'), PHP_URL_HOST),
-    'port' => parse_url(env('SUPABASE_URL'), PHP_URL_PORT) ?: 5432,
-    'database' => ltrim(parse_url(env('SUPABASE_URL'), PHP_URL_PATH), '/'),
-    'username' => null,
-    'password' => env('SUPABASE_KEY'),
-    'charset' => 'utf8',
-    'prefix' => '',
-    'prefix_indexes' => true,
-    'schema' => 'public',
-    'sslmode' => 'prefer',
-],
-
 
     'connections' => [
 
@@ -97,7 +82,6 @@ return [
             ]) : [],
         ],
 
-        
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
@@ -111,8 +95,6 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
-            // 'options' => extension_loaded('pdo_pgsql') ? array_filter([ PDO::ATTR_EMULATE_PREPARES => true,
-            // ]) : [],
         ],
 
         'sqlsrv' => [
@@ -177,8 +159,6 @@ return [
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
         ],
-     
-
 
         'cache' => [
             'url' => env('REDIS_URL'),

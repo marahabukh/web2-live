@@ -78,7 +78,7 @@ class ApiController extends Controller
 
     public function getUsers(Request $request)
     {
-        $limit = $request->input('limit', 50);
+        $limit = $request->input('limit', 15);
         $users = User::paginate($limit);
 
         return $this->corsJson([
