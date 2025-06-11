@@ -26,6 +26,8 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'https://localhost:3000',
+        'https://web2-frontend-one.vercel.app/',
+        'https://web2-frontend-one.vercel.app',
     ],
 
     'allowed_origins_patterns' => [],
