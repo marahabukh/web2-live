@@ -1,31 +1,28 @@
-# Use PHP CLI with Composer
+# ✅ Use PHP 8.2 with CLI (includes PHP)
 FROM php:8.2-cli
 
-# Install system packages and PHP extensions
+# ✅ Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
-    git unzip curl libzip-dev zip libpng-dev libonig-dev libxml2-dev \
+    git unzip curl zip libzip-dev libpng-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql zip
 
-# Install Composer
+# ✅ Install Composer (latest official way)
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# ✅ Set working directory
 WORKDIR /app
 
-# Copy all files to container
+# ✅ Copy project files
 COPY . .
 
-# Install PHP dependencies
+# ✅ Install PHP dependencies
 RUN composer install
 
-# Generate app key
+# ✅ Generate Laravel app key
 RUN php artisan key:generate
 
-# Optional: run DB migrations here or during container start
-# RUN php artisan migrate --force
-
-# Expose port for Laravel dev server
+# ✅ EXPOSE the port Laravel will use
 EXPOSE 8080
 
-# Start Laravel on Railway-assigned port
+# ✅ Start Laravel on the port Railway gives us
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT}"]
